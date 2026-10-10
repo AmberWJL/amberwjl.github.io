@@ -871,9 +871,9 @@ add(new THREE.TorusGeometry(.026, .008, 8, 16, Math.PI), mugM, .042, .05, 0, mug
 const lamp = new THREE.Group(); lamp.position.set(.68, T, -1.45); lamp.scale.setScalar(1.35); scene.add(lamp);
 add(new THREE.CylinderGeometry(.07, .08, .02, 24), mat('#f3ede3'), 0, .01, 0, lamp);
 add(new THREE.CylinderGeometry(.01, .01, .26, 10), oakM, 0, .15, 0, lamp).userData.noShadow = true;
-const shadeM = new THREE.MeshStandardMaterial({ color: '#fbf5ea', emissive: '#ffe2b8', emissiveIntensity: 1, roughness: .6, side: THREE.DoubleSide });
+const shadeM = new THREE.MeshStandardMaterial({ color: '#f0c896', emissive: '#ff9238', emissiveIntensity: 1, roughness: .6, side: THREE.DoubleSide });
 const shade = add(new THREE.SphereGeometry(.11, 28, 12, 0, Math.PI * 2, 0, Math.PI / 2), shadeM, 0, .27, 0, lamp); shade.scale.y = .72; shade.userData.noShadow = true;
-const bulbM = new THREE.MeshBasicMaterial({ color: '#fff4dc' });
+const bulbM = new THREE.MeshBasicMaterial({ color: '#ffb560' });                     // warm amber bulb
 add(new THREE.SphereGeometry(.03, 12, 8), bulbM, 0, .26, 0, lamp);
 
 /* pink lava lamp on the left */
@@ -931,7 +931,7 @@ add(box(.18, .074, .008, .003), standM, 0, .043, -.052, tablet).rotation.x = .67
 
 /* sage office chair, back to the room, below the screen's line of sight.
    Everything is attached: wheels -> caster forks -> sloped legs -> hub -> sleeve + chrome gas lift -> seat plate -> cushion, arms, back spine */
-const chair = new THREE.Group(); chair.position.set(0, 0, -.42); scene.add(chair);
+const chair = new THREE.Group(); chair.position.set(0, 0, -.1); scene.add(chair);              // pulled out a little, so the 15° view sees the keyboard over it
 const sageM = mat('#9fb79b', { roughness: .8 }), baseM = mat('#3a3a40', { roughness: .5, metalness: .3 }), chromeM = mat('#c9ccd2', { roughness: .25, metalness: .7 });
 add(box(.5, .07, .48, .03), sageM, 0, .48, 0, chair);                                          // seat cushion
 add(box(.26, .03, .24, .01), baseM, 0, .43, 0, chair);                                        // seat plate / tilt mechanism
@@ -1002,11 +1002,8 @@ rug.rotation.x = -Math.PI / 2; rug.receiveShadow = true;
 }
 
 /* ---------- west: dog bed + Domi ---------- */
-const PET_POS = new THREE.Vector3(-.85, 0, .55), DOG_H = .56;
+const PET_POS = new THREE.Vector3(.5, 0, -.4), DOG_H = .56;          // beside the chair, by the desk's right end
 const pet = new THREE.Group(); pet.position.copy(PET_POS); scene.add(pet);
-add(new THREE.CylinderGeometry(.38, .39, .05, 36), mat('#7d8fc6', { roughness: 1 }), 0, .025, 0, pet);
-add(new THREE.TorusGeometry(.33, .075, 12, 40), mat('#7d8fc6', { roughness: 1 }), 0, .085, 0, pet).rotation.x = Math.PI / 2;
-add(new THREE.CylinderGeometry(.28, .28, .03, 36), mat('#cdd5ec', { roughness: 1 }), 0, .055, 0, pet);
 const ballTex = canvasTex(512, 256, (g, w, h) => {                                                  // green felt with a curved white seam
   g.fillStyle = '#a8d08d'; g.fillRect(0, 0, w, h);
   const r = rng(61); for (let i = 0; i < 6000; i++) { g.fillStyle = `rgba(${r() > .5 ? '255,255,240' : '60,90,40'},${r() * .08})`; g.fillRect(r() * w, r() * h, 2, 2); }
@@ -1014,9 +1011,9 @@ const ballTex = canvasTex(512, 256, (g, w, h) => {                              
   for (let x = 0; x <= w; x += 4) g.lineTo(x, h / 2 + Math.sin(x / w * Math.PI * 4) * h * .22);
   g.stroke();
 });
-const ball = add(new THREE.SphereGeometry(.045, 40, 28), mat('#ffffff', { map: ballTex, roughness: 1 }), -.42, .045, .32, pet);   // toy ball
+const ball = add(new THREE.SphereGeometry(.045, 40, 28), mat('#ffffff', { map: ballTex, roughness: 1 }), .2, .045, .2, pet);     // toy ball, next to Domi
 ball.rotation.set(.4, .8, .2);
-const dogCard = new THREE.Group(); dogCard.position.y = .058; pet.add(dogCard);
+const dogCard = new THREE.Group(); pet.add(dogCard);                                     // Domi sits right on the rug
 const dogParts = {};
 if (CONFIG.dog === 'photo') {
   const alphaBox = img => {
@@ -1089,7 +1086,7 @@ if (CONFIG.dog === 'photo') {
     g.setAttribute('color', new THREE.BufferAttribute(col, 3));
     const m = new THREE.Mesh(g, dogM); m.castShadow = m.receiveShadow = true; return m;
   }
-  const dog = new THREE.Group(); dog.position.y = .058; dog.scale.setScalar(.8); dogCard.add(dog);
+  const dog = new THREE.Group(); dog.position.y = .005; dog.scale.setScalar(.8); dogCard.add(dog);
   const backCol = (p, n) => mix(C.tan, C.cream, sstep(.2, .7, n.z) + sstep(.05, .02, p.y) * .5);
   const bodyPrims = [
     E([0, .085, -.07], [.112, .085, .105], backCol),
@@ -1628,18 +1625,18 @@ const sun = new THREE.DirectionalLight();                          // moonlight 
 sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; sun.shadow.normalBias = .03;
 Object.assign(sun.shadow.camera, { left: -4, right: 4, top: 4, bottom: -4, near: .5, far: 18 });
 sun.target.position.set(1.0, 0, -.3); scene.add(sun, sun.target);
-const lampLight = new THREE.PointLight('#ffdcae', 1, 2.4, 1.5); lampLight.position.set(DESK_X + .68, T + .3, -1.45); scene.add(lampLight);
-const lampSpot = new THREE.SpotLight('#ffe2bf', 1, 1.8, 1.2, 1, 1.5); lampSpot.position.set(DESK_X + .68, T + .32, -1.45); lampSpot.target.position.set(DESK_X + .45, T, -1.15);
+const lampLight = new THREE.PointLight('#ff9d45', 1, 2.4, 1.5); lampLight.position.set(DESK_X + .68, T + .3, -1.45); scene.add(lampLight);
+const lampSpot = new THREE.SpotLight('#ffa654', 1, 1.8, 1.2, 1, 1.5); lampSpot.position.set(DESK_X + .68, T + .32, -1.45); lampSpot.target.position.set(DESK_X + .45, T, -1.15);
 lampSpot.castShadow = true; lampSpot.shadow.mapSize.set(1024, 1024); lampSpot.shadow.bias = -.0005; lampSpot.shadow.camera.near = .03; scene.add(lampSpot, lampSpot.target);
 const lavaLight = new THREE.PointLight('#e98fd8', 1, 1.0, 1.8); lavaLight.position.set(DESK_X - .66, T + .25, -1.38); scene.add(lavaLight);   // a small pink-purple glow, not a wash
 const screenLight = new THREE.PointLight('#c9c0ff', 1, 1.6, 1.7); screenLight.position.set(DESK_X, T + .45, -1.2); scene.add(screenLight);
 const cafeLight = new THREE.PointLight('#ffe9cf', 1, 1.6, 1.6); cafeLight.position.set(WALL_L + .75, .8, CAFE_Z); scene.add(cafeLight);
 const roomFill = new THREE.PointLight('#ffffff', 1, 7, 1.2); roomFill.position.set(.3, 2.6, .6); scene.add(roomFill);
 const PRESET = {
-  night: { exposure: .95, bg: '#2a2940', hemiSky: '#a4a8e2', hemiGround: '#5d5672', hemi: 1.25, sun: '#8e9ef2', sunI: .9, sunPos: [2.6, 3.4, -7],
-    lamp: 2.4, lampSpot: 5, lava: 1.2, screen: 1.0, cafe: .9, fill: .55, fillCol: '#b7b4ff', shade: 1.1, strip: 1, glass: .9, blob: 1.4, sky: 0 },
-  day: { exposure: .86, bg: '#ece8e1', hemiSky: '#f6f4f0', hemiGround: '#bfb19c', hemi: 1.05, sun: '#fff1dc', sunI: 3.6, sunPos: [-.4, 4.4, -7],
-    lamp: .5, lampSpot: .8, lava: .5, screen: .3, cafe: 0, fill: .35, fillCol: '#fff8ef', shade: .35, strip: .15, glass: .5, blob: .8, sky: 1 },
+  night: { exposure: .95, bg: '#2b231f', hemiSky: '#e6bb93', hemiGround: '#5e4535', hemi: 1.15, sun: '#c4b8e6', sunI: .5, sunPos: [2.6, 3.4, -7],
+    lamp: 2.9, lampSpot: 6, lava: 1.1, screen: .8, cafe: 1.2, fill: .75, fillCol: '#ffc790', shade: 1.25, strip: 1.1, glass: .9, blob: 1.4, sky: 0 },
+  day: { exposure: 1.0, bg: '#f1eee8', hemiSky: '#fbf9f5', hemiGround: '#d6c9b3', hemi: 1.6, sun: '#fff3e2', sunI: 4.3, sunPos: [-.4, 4.4, -7],
+    lamp: .5, lampSpot: .8, lava: .5, screen: .3, cafe: 0, fill: .75, fillCol: '#fffaf2', shade: .35, strip: .15, glass: .5, blob: .8, sky: 1 },
 };
 const N = PRESET.night, D = PRESET.day, cA = new THREE.Color(), cB = new THREE.Color();
 const lerpCol = (target, a, b, t) => target.copy(cA.set(a)).lerp(cB.set(b), t);
@@ -1676,7 +1673,7 @@ const HOT = {
   about:    { obj: books,   label: 'About me',    anchor: [DESK_X - .82, T + .16, -1.18], view: { target: [DESK_X - .82, T + .05, -1.18], pos: [DESK_X - .72, T + .55, -.55] } },
   photos:   { obj: gallery, label: 'Life',        anchor: [-.3, 2.37, WALL_B + .05], view: { target: [-.4, 2.05, WALL_B], pos: [-.4, 1.9, .95] } },
   contact:  { obj: phone,   label: 'Contact',     anchor: [DESK_X + .7, T + .08, -1.02], view: { target: [DESK_X + .7, T, -1.02], pos: [DESK_X + .62, T + .55, -.6] } },
-  pet:      { obj: pet,     label: 'Meet Domi',   anchor: [PET_POS.x, .62, PET_POS.z], view: { target: [PET_POS.x, .3, PET_POS.z], pos: [PET_POS.x + .15, .85, PET_POS.z + 1.15] } },
+  pet:      { obj: pet,     label: 'Meet Domi',   anchor: [PET_POS.x, .47, PET_POS.z], view: { target: [PET_POS.x, .3, PET_POS.z], pos: [PET_POS.x + .15, .85, PET_POS.z + 1.15] } },
   window:   { obj: win,     label: windowLabel,   anchor: [(WIN.x0 + WIN.x1) / 2, 1.65, WALL_B + .06], toggle: true },
 };
 const pickables = [];
@@ -1698,8 +1695,8 @@ function setupHome() {
   /* a wide lens keeps the window on the left and the bouldering wall on the right in frame, like standing in the doorway */
   const asp = innerWidth / innerHeight;
   camera.fov = Math.min(74, Math.max(50, 2 * Math.atan(Math.tan(35 * Math.PI / 180) / asp) * 180 / Math.PI)); camera.updateProjectionMatrix();
-  const target = new THREE.Vector3(0, .8, -1.0);
-  const off = new THREE.Vector3(0, .85, 4.3).multiplyScalar(asp < 1 ? 1.08 : 1);
+  const target = new THREE.Vector3(-.15, .75, -1.05);                              // the desk, seen from closer and higher so everything on it shows
+  const off = new THREE.Vector3(0, Math.sin(15 * Math.PI / 180), Math.cos(15 * Math.PI / 180)).multiplyScalar(3.4 * (asp < 1 ? 1.08 : 1));   // looking down at ~15°
   home = { target, pos: target.clone().add(off) };
   const sph = new THREE.Spherical().setFromVector3(off);
   controls.minDistance = off.length() * .45; controls.maxDistance = off.length() * 1.06;
@@ -1827,7 +1824,7 @@ renderer.setAnimationLoop(() => {
     bulbs.forEach((b, i) => b.material.color.copy(b.userData.base).multiplyScalar((1 - dayMix * .35) * (.8 + .25 * Math.sin(t * 2 + i * 1.7))));
     if (CONFIG.dog === 'photo') {
       dogCard.scale.y = 1 + Math.sin(t * 2.4) * .012;
-      dogCard.position.y = .058 + Math.pow(Math.max(0, Math.sin(t * 1.1)), 30) * .025;
+      dogCard.position.y = Math.pow(Math.max(0, Math.sin(t * 1.1)), 30) * .025;
     } else {
       const { dog, body, head, tail, ears, tongue, tongueY } = dogParts, pant = Math.sin(t * 7);
       dog.worldToLocal(dv.copy(view.position));                                 // Domi watches you
