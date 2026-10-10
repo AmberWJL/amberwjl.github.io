@@ -3,12 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Amber's Room</title>
+<title>Amber's Personal Website</title>
 <meta name="description" content="Amber (Jiale) Wang — software engineer and ML-for-software-engineering researcher. An interactive 3D room: click the objects to explore projects, research and life outside work.">
 <link rel="canonical" href="https://amberwjl.github.io/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://amberwjl.github.io/">
-<meta property="og:title" content="Amber Wang · ML × Software Engineering">
+<meta property="og:title" content="Amber's Personal Website">
+<meta property="og:site_name" content="Amber's Personal Website">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","name":"Amber (Jiale) Wang","alternateName":["Jiale Amber Wang","Jiale Wang","Amber Wang"],
+ "url":"https://amberwjl.github.io/","jobTitle":"Software Engineer and Researcher","email":"mailto:jiale.wang@uwaterloo.ca",
+ "alumniOf":[{"@type":"CollegeOrUniversity","name":"University of Waterloo"},{"@type":"CollegeOrUniversity","name":"Queen's University"}],
+ "knowsAbout":["Machine learning for software engineering","Software testing","Test evolution","LLMs for code","AI coding agents"],
+ "sameAs":["https://www.linkedin.com/in/amber-w-931757165/","https://github.com/AmberWJL"]}
+</script>
 <meta property="og:description" content="An interactive 3D room: click the objects to explore projects, research and life outside work.">
 <meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,6 +30,7 @@
   --display:'Space Grotesk',system-ui,sans-serif;--body:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace;
 }
 *{box-sizing:border-box}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 html,body{height:100%;margin:0;overflow:hidden;touch-action:manipulation}
 body{background:#120d0b;color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit}
@@ -216,6 +225,7 @@ img.portrait{display:block;object-fit:cover;object-position:50% 50%;background:#
 </script>
 </head>
 <body>
+<h1 class="sr-only">Amber (Jiale) Wang: software engineer and ML-for-software-engineering researcher</h1>
 <canvas id="gl" aria-label="Interactive 3D room. Click objects to open sections."></canvas>
 <div class="vignette"></div>
 
@@ -1647,13 +1657,11 @@ function applyMode(t) {
   cafe.userData.strip.material.color.set('#fff0dc').multiplyScalar(.35 + .65 * L('strip', t));
   daySky.material.opacity = L('sky', t);
 }
-let dayTarget = 0;
-try { if (localStorage.getItem('room-mode') === 'day') dayTarget = 1; } catch (e) {}
+let dayTarget = 0;                                                                // every visit starts at night; the window switches to day
 let dayMix = dayTarget;
 function setDay(d) {
   dayTarget = d ? 1 : 0;
   document.body.classList.toggle('day', !!d);
-  try { localStorage.setItem('room-mode', d ? 'day' : 'night'); } catch (e) {}
   if (HOT.window.dot) HOT.window.dot.setAttribute('aria-label', windowLabel());
   if (hovered === 'window') tip.textContent = windowLabel();
 }
