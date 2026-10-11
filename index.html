@@ -470,8 +470,8 @@ const $ = s => document.querySelector(s);
 const touch = matchMedia('(hover: none)').matches;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 $('#hint').innerHTML = touch
-  ? '<span><b>Drag</b> to look</span><span><b>Tap</b> the dots</span><span><b>Tap</b> the window</span>'
-  : '<span><b>Drag</b> to look around</span><span><b>Click</b> the objects</span><span><b>Window</b> = day / night</span>';
+  ? '<span><b>Drag</b> to look around</span><span><b>Pinch</b> to zoom</span><span><b>Tap</b> to explore</span>'
+  : '<span><b>Drag</b> to look around</span><span><b>Scroll</b> to zoom</span><span><b>Click</b> to explore</span>';
 
 /* ================= overlays ================= */
 let openKey = null, lastFocus = null;
@@ -501,7 +501,8 @@ document.querySelectorAll('.card').forEach(c => c.addEventListener('click', e =>
 addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (openKey) hidePanel(); else if (window.__cancelVisit) window.__cancelVisit(); });
 document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', e => {
   e.preventDefault(); const k = b.dataset.open;
-  if (openKey) { const from = openKey; hidePanel(false); if (from !== k && $('#p-' + from).classList.contains('panel')) return setTimeout(() => showPanel(k), 430); }
+  if (openKey === k) return;                                             // already showing this section
+  if (openKey) hidePanel(false);                                         // close the current one, then fly to the new object
   window.__visit ? window.__visit(k) : showPanel(k);
 }));
 $('#logo').addEventListener('click', () => { hidePanel(false); window.__flyHome && window.__flyHome(); });
@@ -765,18 +766,17 @@ const SKY_GAP = .35, SKY_H = WALL_H - .02;
 });
 
 const win = new THREE.Group(); scene.add(win);
-/* a window frame (outer frame, cross mullions, sill, glass) set into a wall; along = 'x' for the north wall, 'z' for the west wall */
+/* a window frame (outer frame, cross mullions, glass) set into a wall; along = 'x' for the north wall, 'z' for the west wall */
 function windowFrame(o, along) {
   const frameM = mat('#f7f4ef', { roughness: .7 }), c = (o.a0 + o.a1) / 2, cy = (o.y0 + o.y1) / 2, ww = o.a1 - o.a0, wh = o.y1 - o.y0, D = TH + .04;
   const g = new THREE.Group(); win.add(g);
   if (along === 'x') g.position.set(c, 0, WALL_B - TH / 2); else { g.position.set(WALL_L - TH / 2, 0, c); g.rotation.y = Math.PI / 2; }
   [[wh / 2 - .03, .06], [-wh / 2 + .03, .06], [0, .05]].forEach(([dy, t]) => add(new THREE.BoxGeometry(ww, t, D), frameM, 0, cy + dy, 0, g));
   [[-ww / 2 + .03, .06], [ww / 2 - .03, .06], [0, .05]].forEach(([dx, t]) => add(new THREE.BoxGeometry(t, wh, D), frameM, dx, cy, 0, g));
-  add(box(ww + .16, .04, o.sill, .01), frameM, 0, o.y0 - .02, TH / 2 + o.sill / 2 - .01, g);                     // sill
   add(new THREE.PlaneGeometry(ww, wh), new THREE.MeshStandardMaterial({ color: '#dfe9f5', transparent: true, opacity: .1, roughness: .05, depthWrite: false }), 0, cy, 0, g);
 }
-windowFrame({ a0: WIN.x0, a1: WIN.x1, y0: WIN.y0, y1: WIN.y1, sill: .2 }, 'x');
-windowFrame({ a0: WIN_W.z0, a1: WIN_W.z1, y0: WIN_W.y0, y1: WIN_W.y1, sill: .2 }, 'z');
+windowFrame({ a0: WIN.x0, a1: WIN.x1, y0: WIN.y0, y1: WIN.y1 }, 'x');
+windowFrame({ a0: WIN_W.z0, a1: WIN_W.z1, y0: WIN_W.y0, y1: WIN_W.y1 }, 'z');
 
 /* ---------- gallery wall: light-oak frames, low-poly mountain prints (your photos if CONFIG.photos is set) ---------- */
 /* load an image onto a surface: cover-fit to the surface's aspect and swap it into `material` once loaded */
@@ -1002,7 +1002,7 @@ rug.rotation.x = -Math.PI / 2; rug.receiveShadow = true;
 }
 
 /* ---------- west: dog bed + Domi ---------- */
-const PET_POS = new THREE.Vector3(.5, 0, -.4), DOG_H = .56;          // beside the chair, by the desk's right end
+const PET_POS = new THREE.Vector3(-1.0, 0, -.25), DOG_H = .56;        // left of the chair, in front of the floor plant
 const pet = new THREE.Group(); pet.position.copy(PET_POS); scene.add(pet);
 const ballTex = canvasTex(512, 256, (g, w, h) => {                                                  // green felt with a curved white seam
   g.fillStyle = '#a8d08d'; g.fillRect(0, 0, w, h);
@@ -1011,7 +1011,7 @@ const ballTex = canvasTex(512, 256, (g, w, h) => {                              
   for (let x = 0; x <= w; x += 4) g.lineTo(x, h / 2 + Math.sin(x / w * Math.PI * 4) * h * .22);
   g.stroke();
 });
-const ball = add(new THREE.SphereGeometry(.045, 40, 28), mat('#ffffff', { map: ballTex, roughness: 1 }), .2, .045, .2, pet);     // toy ball, next to Domi
+const ball = add(new THREE.SphereGeometry(.045, 40, 28), mat('#ffffff', { map: ballTex, roughness: 1 }), -.22, .045, .16, pet);  // toy ball, on Domi's left
 ball.rotation.set(.4, .8, .2);
 const dogCard = new THREE.Group(); pet.add(dogCard);                                     // Domi sits right on the rug
 const dogParts = {};
@@ -1426,6 +1426,90 @@ const cafe = new THREE.Group(); cafe.position.set(WALL_L, 0, CAFE_Z); scene.add(
   });
 }
 
+/* ---------- west: light-oak six-cube low bookcase under the window, linking the coffee cabinet and the floor plant ----------
+   Local frame like the coffee corner: +x points into the room (front face at x = D), z runs along the west wall. */
+{
+  const W = 1.12, D = .34, H = .8, B = .022, PL = .03;                 // width along the wall, depth, height, board, plinth
+  const shelf = new THREE.Group(); shelf.position.set(WALL_L, 0, -.29); scene.add(shelf);
+  const oak = mat('#dfc6a0', { roughness: .7 }), oakEdge = mat('#d4b98f', { roughness: .7 });
+  const CELL = (W - 4 * B) / 3, ROW = (H - PL - 3 * B) / 2;            // inner cube size
+  const colZ = [-1, 0, 1].map(i => i * (CELL + B));
+  const yBot = PL + B, yMid = yBot + ROW, yTop = yMid + B;             // floor of the bottom row, middle shelf, floor of the top row
+  add(box(D, PL, W - .02, .006), oakEdge, D / 2, PL / 2, 0, shelf);                                  // plinth
+  add(box(D, B, W, .004), oak, D / 2, PL + B / 2, 0, shelf);                                         // bottom board
+  add(box(D, B, W, .004), oak, D / 2, yMid + B / 2, 0, shelf);                                       // middle shelf
+  add(box(D + .01, B, W + .01, .005), oak, (D + .01) / 2, H - B / 2, 0, shelf);                      // top
+  [-1, 1].forEach(sd => add(box(D, H, B, .004), oak, D / 2, H / 2, sd * (W - B) / 2, shelf));       // sides
+  [-1, 1].forEach(sd => add(box(D - .01, H - PL - B * 2, B, .003), oak, (D - .01) / 2, PL + B + (H - PL - B * 2) / 2, sd * (CELL + B) / 2, shelf));   // dividers
+  add(new THREE.BoxGeometry(.008, H - PL, W - .01), oakEdge, .004, PL + (H - PL) / 2, 0, shelf);    // back panel
+
+  const SPINE = { pink: '#e3b4b8', cream: '#f3ecdf', green: '#9dbb98', blue: '#9db1c6' }, spines = Object.values(SPINE);
+  const r = rng(321);
+  /* a row of upright books filling part of a cube, left to right along z; the last one can lean */
+  function uprightBooks(z0, z1, y, n, lean) {
+    let z = z0;
+    for (let i = 0; i < n && z < z1; i++) {
+      const t = .022 + r() * .016, h = .2 + r() * .1, d = .17 + r() * .05;
+      const bk = add(box(d, h, t, .003), mat(spines[(i + Math.floor(r() * 4)) % 4], { roughness: .8 }), .03 + d / 2, y + h / 2, z + t / 2, shelf);
+      if (lean && i === n - 1) { bk.rotation.x = -.28; bk.position.z += .03; bk.position.y -= .012; }
+      add(new THREE.BoxGeometry(.002, .012, t * .7), mat('#fbf7ef'), .03 + d + .001, y + h * .78, z + t / 2, shelf);   // little spine label
+      z += t + .002;
+    }
+  }
+  /* a flat stack of books, widest at the bottom */
+  function bookStack(z, y, sizes, cols) {
+    let yy = y;
+    sizes.forEach(([w, d, t], i) => { add(box(d, t, w, .003), mat(cols[i % cols.length], { roughness: .8 }), .04 + d / 2, yy + t / 2, z + (r() - .5) * .02, shelf).rotation.y = (r() - .5) * .12; yy += t; });
+    return yy;
+  }
+  // top row: upright books | flat stack + little house | upright books (heights vary across the row)
+  uprightBooks(colZ[0] - CELL / 2 + .01, colZ[0] + CELL / 2 - .03, yTop, 8, true);
+  const stackTop = bookStack(colZ[1], yTop, [[.25, .2, .03], [.23, .19, .026], [.21, .17, .028], [.19, .16, .022]], [SPINE.blue, SPINE.cream, SPINE.pink, SPINE.green]);
+  {                                                                                                  // small ceramic house ornament
+    const hs = new THREE.Group(); hs.position.set(.15, stackTop, colZ[1] + .02); hs.rotation.y = .3; shelf.add(hs);
+    const houseM = mat('#f6efe4', { roughness: .6 });
+    add(box(.07, .06, .06, .006), houseM, 0, .03, 0, hs);
+    const roof = add(new THREE.CylinderGeometry(.046, .046, .074, 3), mat('#d9a7ad', { roughness: .6 }), 0, .083, 0, hs);   // triangular prism roof, gable facing the room
+    roof.rotation.order = 'YXZ'; roof.rotation.set(-Math.PI / 2, Math.PI / 2, 0);
+    add(new THREE.BoxGeometry(.004, .022, .014), mat('#b8907a'), .036, .016, 0, hs);                // door
+  }
+  uprightBooks(colZ[2] - CELL / 2 + .012, colZ[2] + CELL / 2 - .06, yTop, 6, false);
+
+  // bottom row: cream storage basket | art books | sage storage box
+  {
+    const weave = canvasTex(256, 256, (g, w, h) => {
+      g.fillStyle = '#efe4d0'; g.fillRect(0, 0, w, h);
+      for (let y = 0; y < h; y += 16) for (let x = 0; x < w; x += 16) { g.fillStyle = ((x + y) / 16) % 2 ? '#e2d3ba' : '#f5ecdc'; g.fillRect(x + 1, y + 1, 14, 14); }
+    });
+    weave.wrapS = weave.wrapT = THREE.RepeatWrapping; weave.repeat.set(2, 2);
+    const basketM = mat('#ffffff', { map: weave, roughness: .95 });
+    const bw = CELL - .03, bh = ROW * .78, bd = D - .06;
+    add(box(bd, bh, bw, .02), basketM, .03 + bd / 2, yBot + bh / 2, colZ[0], shelf);
+    add(box(bd + .008, .018, bw + .008, .008), mat('#e2d3ba', { roughness: .9 }), .03 + bd / 2, yBot + bh - .009, colZ[0], shelf);   // rim
+    add(new THREE.BoxGeometry(.004, .016, .06), mat('#c9b48f'), .03 + bd + .002, yBot + bh * .78, colZ[0], shelf);                     // hand hole
+  }
+  bookStack(colZ[1], yBot, [[.31, .27, .024], [.3, .26, .02], [.29, .25, .026]], [SPINE.cream, SPINE.blue, SPINE.pink]);            // big art books lying flat
+  {
+    const sw = CELL - .03, sh = ROW * .7, sd = D - .06, sageM = mat('#a9c2a4', { roughness: .8 });
+    add(box(sd, sh, sw, .01), sageM, .03 + sd / 2, yBot + sh / 2, colZ[2], shelf);
+    add(box(sd + .01, .02, sw + .01, .006), mat('#9db89a', { roughness: .8 }), .03 + sd / 2, yBot + sh + .006, colZ[2], shelf);     // lid
+    add(new THREE.BoxGeometry(.003, .022, .07), mat('#f4efe6'), .03 + sd + .002, yBot + sh * .55, colZ[2], shelf);                  // label
+  }
+
+  // on top, kept simple: little frame, two books, ceramic vase
+  {
+    const fr = new THREE.Group(); fr.position.set(.24, H, -.36); fr.rotation.set(0, Math.PI / 2 - .25, 0); shelf.add(fr);
+    add(box(.13, .16, .012, .004), oak, 0, .08, 0, fr);
+    add(new THREE.PlaneGeometry(.1, .13), mat('#ffffff', { map: canvasTex(200, 260, (g, w, h) => drawLowPoly(g, w, h, 3)), roughness: .9 }), 0, .08, .0065, fr);
+    add(new THREE.BoxGeometry(.01, .12, .04), oak, 0, .055, -.03, fr).rotation.x = -.35;                                              // easel back
+  }
+  bookStack(.02, H, [[.2, .15, .026], [.18, .14, .022]], [SPINE.green, SPINE.pink]);
+  {
+    const vp = [[0, 0], [.03, 0], [.045, .02], [.05, .055], [.035, .095], [.018, .115], [.02, .13], [0, .13]].map(([x, y]) => new THREE.Vector2(x, y));
+    add(new THREE.LatheGeometry(vp, 20), mat('#e9dfcf', { roughness: .45 }), .24, H, .38, shelf);                                    // ceramic vase
+  }
+}
+
 /* ---------- east: bouldering wall + continuous mat ---------- */
 const climb = new THREE.Group(); scene.add(climb);
 const plyTex = canvasTex(1024, 1024, (g, w, h) => {
@@ -1695,11 +1779,11 @@ function setupHome() {
   /* a wide lens keeps the window on the left and the bouldering wall on the right in frame, like standing in the doorway */
   const asp = innerWidth / innerHeight;
   camera.fov = Math.min(74, Math.max(50, 2 * Math.atan(Math.tan(35 * Math.PI / 180) / asp) * 180 / Math.PI)); camera.updateProjectionMatrix();
-  const target = new THREE.Vector3(-.15, .75, -1.05);                              // the desk, seen from closer and higher so everything on it shows
+  const target = new THREE.Vector3(-.15, 1.2, -1.05);                               // raised so the photo wall's dot clears the header                              // the desk, seen from closer and higher so everything on it shows
   const off = new THREE.Vector3(0, Math.sin(15 * Math.PI / 180), Math.cos(15 * Math.PI / 180)).multiplyScalar(3.4 * (asp < 1 ? 1.08 : 1));   // looking down at ~15°
   home = { target, pos: target.clone().add(off) };
   const sph = new THREE.Spherical().setFromVector3(off);
-  controls.minDistance = off.length() * .45; controls.maxDistance = off.length() * 1.06;
+  controls.minDistance = off.length() * .45; controls.maxDistance = off.length() * 1.4;   // zoom out to about 90% of the full-room distance
   controls.minPolarAngle = sph.phi - .3; controls.maxPolarAngle = Math.min(sph.phi + .14, 1.55);
   controls.minAzimuthAngle = -.55; controls.maxAzimuthAngle = .55;
 }
@@ -1753,7 +1837,12 @@ function pick(e) {
   const hit = ray.intersectObjects(occluders, false).find(h => h.object.userData.hot || !(h.object.material.transparent || h.object.material.isMeshBasicMaterial));
   return hit && hit.object.userData.hot || null;
 }
-canvas.addEventListener('pointerleave', () => { if (!down) setHover(null); });
+/* idle sway: while the mouse rests in the room (not on the menu bar, a dot or a button), the view drifts very slowly left and right around the desk */
+const SWAY = { amp: .06, speed: 2 * Math.PI / 26 }, sway = { ph: 0, w: 0 }, swayQ = new THREE.Quaternion(), UP = new THREE.Vector3(0, 1, 0);
+let inRoom = !matchMedia('(hover: hover)').matches;                              // touch screens have no hover, so they sway whenever idle
+const topBar = $('.top');                                                         // the header lets clicks through its empty parts, so test the band itself
+addEventListener('pointermove', e => { if (e.pointerType === 'mouse') inRoom = e.target === canvas && e.clientY > topBar.getBoundingClientRect().bottom; }, { passive: true });
+canvas.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') inRoom = false; if (!down) setHover(null); });
 canvas.addEventListener('pointermove', e => {
   if (openKey || tween) return;
   if (down) { if (Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) { down.moved = true; canvas.classList.add('drag'); setHover(null); } return; }
@@ -1810,7 +1899,16 @@ renderer.setAnimationLoop(() => {
   if (intro) { intro = false; flyTo(home.pos, home.target, 2200, () => { controls.enabled = true; }); }
   if (tween) tween(now);
   else if (controls.enabled) controls.update();
-  view.copy(camera); keepInside(view.position); view.updateMatrixWorld();
+  const settled = !reduce && !openKey && !tween && !pendingKey;                     // fade out for flights and open panels so they land exactly
+  sway.w += ((settled ? 1 : 0) - sway.w) * Math.min(1, dt * 1.5);
+  if (sway.w < .002 && !settled) sway.ph = 0;                                       // restart from the centre next time
+  if (settled && inRoom && !down && !hovered) sway.ph += dt * SWAY.speed;           // pause in place while pointing at something or on the menu
+  view.copy(camera);
+  if (sway.w > .001) {
+    swayQ.setFromAxisAngle(UP, sway.w * SWAY.amp * Math.sin(sway.ph));
+    view.position.sub(controls.target).applyQuaternion(swayQ).add(controls.target); view.quaternion.premultiply(swayQ);
+  }
+  keepInside(view.position); view.updateMatrixWorld();
   if (Math.abs(dayMix - dayTarget) > .001) { dayMix += Math.sign(dayTarget - dayMix) * Math.min(Math.abs(dayTarget - dayMix), dt * (reduce ? 100 : 1.4)); applyMode(dayMix); }
   if (CONFIG.dog === 'photo') dogCard.rotation.y = Math.atan2(view.position.x - PET_POS.x, view.position.z - PET_POS.z);
 
