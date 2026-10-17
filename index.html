@@ -165,6 +165,9 @@ body.day.paper .logo,body.day.paper .top nav button{color:#F1EEFB}
 
 /* about */
 .abhead{display:flex;align-items:center;justify-content:space-between;gap:28px}
+.about-intro{max-width:480px;display:flex;flex-direction:column;gap:13px}
+.panel .about-name{margin:0;font-family:var(--display);font-size:clamp(30px,4vw,42px);font-weight:700;line-height:1.12;letter-spacing:-.04em;color:var(--ink)}
+.about-summary{max-width:52ch;margin:0;font-size:clamp(18px,2vw,21px);line-height:1.5;font-weight:400;color:var(--soft)}
 img.portrait{display:block;object-fit:cover;object-position:50% 50%;background:#2a2a30}
 .portrait{flex:none;width:304px;height:380px;border-radius:28px;background:linear-gradient(145deg,#D3C6F2,#B9A5E4 50%,#6E5FB0);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:72px;color:#fff3e6;box-shadow:0 14px 34px rgba(70,40,20,.28)}
 .facts{display:grid;grid-template-columns:1fr 1fr;gap:18px 32px;margin:30px 0 0;padding:22px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -173,6 +176,17 @@ img.portrait{display:block;object-fit:cover;object-position:50% 50%;background:#
 .facts a{color:var(--ink);font-weight:700;text-decoration:none;border-bottom:2px solid var(--accent);width:fit-content}
 .facts a:hover{color:var(--accent-ink)}
 .job{margin:0 0 34px}
+.about-entry{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;align-items:start;margin:0 0 28px;padding:0 0 26px;border-bottom:1px solid var(--line)}
+.about-entry:last-child{border-bottom:0;padding-bottom:0}
+.org-mark{width:52px;height:52px;display:grid;place-items:center;flex:none;border:0;border-radius:10px;background:#fff;overflow:hidden;padding:0}
+.org-mark.white-bg{background:#fff}
+.org-mark img{display:block;width:88%;height:88%;object-fit:contain;border-radius:6px}
+.org-mark.cgi{padding:0}
+.about-entry .job{margin:0}
+.about-entry .job h4{line-height:1.35}
+.about-entry .job .when{margin-top:6px}
+.about-entry .job ul{margin-top:10px}
+@media (max-width:520px){.about-entry{grid-template-columns:52px minmax(0,1fr);gap:10px}.org-mark{width:44px;height:44px;border-radius:8px}}
 .job h4{font-size:19px;font-weight:700;color:var(--ink);margin:0}
 .job h4 span{font-weight:500;color:var(--accent-ink)}
 .job .when{font-size:13.5px;margin:6px 0 12px}
@@ -354,10 +368,9 @@ img.portrait{display:block;object-fit:cover;object-position:50% 50%;background:#
   <button class="close" aria-label="Close">✕</button>
   <div class="in" style="max-width:860px">
     <div class="abhead">
-      <div>
-        <p class="kick">About me</p>
-        <h2>Hi, I'm <em>Amber</em>.</h2>
-        <p class="lede" style="font-weight:500">I'm Amber (Jiale) Wang, a software engineer and researcher. I build ML-powered tools that help developers test, understand and ship code.</p>
+      <div class="about-intro">
+        <h2 class="about-name">I'm Amber Jiale Wang.</h2>
+        <p class="about-summary">A software engineer and researcher. I build ML-powered tools that help developers test, understand and ship code.</p>
       </div>
       <img class="portrait" src="photos/me_portrait.jpg" alt="Amber Wang" width="304" height="380">
     </div>
@@ -369,25 +382,23 @@ img.portrait{display:block;object-fit:cover;object-position:50% 50%;background:#
     </div>
     <p style="margin:28px 0 0"><a class="btn" href="resume.pdf" target="_blank" rel="noopener">Download résumé ↓</a></p>
 
-    <h3 class="sec">Experience</h3>
-    <div class="job"><h4>Software Engineer Intern <span>· Google</span></h4><p class="when">May 2026 – Aug 2026 · Mountain View, CA</p>
-      <ul><li>Enabled <b>HybridSim</b>, a TPU performance simulator, for third-party workloads, improving accuracy by up to <b>90%</b>.</li>
-      <li>Built an autonomous <b>agentic configuration optimizer</b> with a reward system and context management, reaching up to <b>16%</b> higher TPU throughput on 4 training workloads.</li></ul></div>
-    <div class="job"><h4>AI Software Developer <span>· CGI</span></h4><p class="when">Sept 2025 – Dec 2025 · Toronto, ON</p>
-      <ul><li>Developed an AI-driven code analysis platform with code <b>embedding</b>, <b>indexing</b>, <b>AST parsing</b> and a <b>RAG</b> pipeline, using LLMs to produce codebase insights.</li>
-      <li>Enhanced a Ticket Analyzer with <b>NLP clustering</b>, classification pipelines and a similarity-scoring engine.</li></ul></div>
-    <div class="job"><h4>Machine Learning Developer <span>· Royal Bank of Canada</span></h4><p class="when">May 2025 – Aug 2025 · Toronto, ON</p>
-      <ul><li>Prototyped and evaluated agentic AI coding tools (<b>Cursor</b>, <b>Devin</b>, <b>Windsurf</b>) on real engineering tasks.</li>
-      <li>Built automated <b>Python</b> benchmarks across curated repositories, measuring task success rate and code correctness.</li></ul></div>
-    <div class="job"><h4>Automation Engineer <span>· Ericsson Canada</span></h4><p class="when">Sept 2022 – Dec 2023 · Ottawa, ON</p>
-      <ul><li>Built 10+ automated workflows with <b>Power Automate</b>, <b>Azure</b> and <b>Python</b>, producing 20+ daily dashboards and cutting manual work by <b>90%</b>.</li>
-      <li>Developed a license-request email server serving 400+ users, and a <b>React</b> cause-and-effect chain builder.</li></ul></div>
-
     <h3 class="sec">Education</h3>
-    <div class="job"><h4>Master of Mathematics, Computer Science <span>· University of Waterloo</span></h4><p class="when">Sept 2024 – Dec 2026 · Advisor: Pengyu Nie · GPA 97/100</p>
-      <ul><li>Research: machine learning for software engineering, including test automation, code analysis with NLP and data-driven development.</li></ul></div>
-    <div class="job"><h4>Bachelor of Computing, Mathematics &amp; Analytics <span>· Queen's University</span></h4><p class="when">Sept 2019 – Apr 2024 · GPA 4.0/4.3</p>
-      <ul><li>Algorithms, Data Structures, Software Architecture, Databases, Operating Systems, Formal Methods, Statistics &amp; Probability.</li></ul></div>
+    <div class="about-entry"><div class="org-mark"><img src="photos/logos/waterloo-square.png" alt="University of Waterloo logo"></div><div class="job"><h4>Master of Mathematics, Computer Science <span>· University of Waterloo</span></h4><p class="when">Sept 2024 – Dec 2026 · Advisor: Pengyu Nie · GPA 97/100</p></div></div>
+    <div class="about-entry"><div class="org-mark"><img src="photos/logos/queens-square.png" alt="Queen's University logo"></div><div class="job"><h4>Bachelor of Computing, Mathematics &amp; Analytics <span>· Queen's University</span></h4><p class="when">Sept 2019 – Apr 2024 · GPA 4.0/4.3</p></div></div>
+
+    <h3 class="sec">Experience</h3>
+    <div class="about-entry"><div class="org-mark white-bg"><img src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png" alt="Google logo"></div><div class="job"><h4>Software Engineer Intern <span>· Google</span></h4><p class="when">May 2026 – Aug 2026 · Mountain View, CA</p>
+      <ul><li>Enabled <b>HybridSim</b>, a TPU performance simulator, for third-party workloads, improving accuracy by up to <b>90%</b>.</li>
+      <li>Built an autonomous <b>agentic configuration optimizer</b> with a reward system and context management, reaching up to <b>16%</b> higher TPU throughput on 4 training workloads.</li></ul></div></div>
+    <div class="about-entry"><div class="org-mark cgi"><img src="photos/logos/cgi.png" alt="CGI logo"></div><div class="job"><h4>AI Software Developer <span>· CGI</span></h4><p class="when">Sept 2025 – Dec 2025 · Toronto, ON</p>
+      <ul><li>Developed an AI-driven code analysis platform with code <b>embedding</b>, <b>indexing</b>, <b>AST parsing</b> and a <b>RAG</b> pipeline, using LLMs to produce codebase insights.</li>
+      <li>Enhanced a Ticket Analyzer with <b>NLP clustering</b>, classification pipelines and a similarity-scoring engine.</li></ul></div></div>
+    <div class="about-entry"><div class="org-mark white-bg"><img src="photos/logos/rbc-mark.png" alt="RBC logo"></div><div class="job"><h4>Machine Learning Developer <span>· Royal Bank of Canada</span></h4><p class="when">May 2025 – Aug 2025 · Toronto, ON</p>
+      <ul><li>Prototyped and evaluated agentic AI coding tools (<b>Cursor</b>, <b>Devin</b>, <b>Windsurf</b>) on real engineering tasks.</li>
+      <li>Built automated <b>Python</b> benchmarks across curated repositories, measuring task success rate and code correctness.</li></ul></div></div>
+    <div class="about-entry"><div class="org-mark"><img src="photos/logos/ericsson-square.png" alt="Ericsson logo"></div><div class="job"><h4>Automation Engineer <span>· Ericsson Canada</span></h4><p class="when">Sept 2022 – Dec 2023 · Ottawa, ON</p>
+      <ul><li>Built 10+ automated workflows with <b>Power Automate</b>, <b>Azure</b> and <b>Python</b>, producing 20+ daily dashboards and cutting manual work by <b>90%</b>.</li>
+      <li>Developed a license-request email server serving 400+ users, and a <b>React</b> cause-and-effect chain builder.</li></ul></div></div>
 
   </div>
 </section>
