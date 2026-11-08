@@ -146,6 +146,7 @@ body.day.paper .logo,body.day.paper .top nav button{color:#F1EEFB}
 .meta span+span{color:var(--soft);font-weight:500}
 .proj h4{font-size:clamp(22px,2.6vw,32px);font-weight:700;line-height:1.18;color:var(--ink);margin:0;letter-spacing:-.01em}
 .proj p{font-size:15.5px;line-height:1.6;margin:0;max-width:56ch}
+.proj .links{display:flex;flex-wrap:wrap;gap:18px;font-size:14px}
 .tags{display:flex;flex-wrap:wrap;gap:8px}
 .tags i{font-style:normal;font-size:12px;padding:4px 10px;border-radius:999px;background:var(--chipbg);color:var(--ink)}
 .foot{margin:64px 0 0;padding-top:26px;border-top:1px solid var(--line);font-size:16px;color:var(--ink)}
@@ -270,29 +271,37 @@ img.portrait{display:block;object-fit:cover;object-position:50% 50%;background:#
   <div class="in">
     <p class="kick">Projects · 2024–2026</p>
     <h2>Things I've <em>built</em>.</h2>
-    <p class="lede">From TPU performance tooling at Google and LLM-powered code analysis at CGI to research on test evolution and code coverage, most of my work sits where machine learning meets software engineering.</p>
+    <p class="lede">From LLM-powered code analysis at CGI to research on test evolution and code coverage and an open-source Claude Code plugin, most of my work sits where machine learning meets software engineering.</p>
     <div class="chips" id="chips">
       <button class="chip on" data-f="all">All</button>
       <button class="chip" data-f="industry">Industry</button>
       <button class="chip" data-f="research">Research</button>
+      <button class="chip" data-f="opensource">Open source</button>
     </div>
     <div class="pgrid">
-      <article class="proj feat" data-cat="industry">
+      <!-- data-hide keeps a card off the page (filters included); delete the attribute to show it again -->
+      <article class="proj" data-cat="industry" data-hide>
         <div class="thumb" data-label="TPU config agent" data-img="projects/tpu-agent.jpg" data-glyph="throughput ▲ 16%&#10;accuracy ▲ 90%" style="background:linear-gradient(135deg,#1d2a5c,#3a5fa8 55%,#9cc0f2)"></div>
-        <div style="display:flex;flex-direction:column;gap:12px">
-          <div class="meta"><span>Featured</span><span>Google · 2026</span></div>
-          <h4>An agent that tunes TPU training configs</h4>
-          <p>Built an autonomous agentic configuration optimizer with a reward system and context management. On 4 training workloads it reached up to <b>16% higher TPU throughput</b>. I also enabled HybridSim, a TPU performance simulator, for third-party workloads, with accuracy gains of up to <b>90%</b>.</p>
-          <div class="tags"><i>AI agents</i><i>TPU</i><i>Performance simulation</i></div>
-        </div>
+        <div class="meta"><span>Industry</span><span>Google · 2026</span></div>
+        <h4>An agent that tunes TPU training configs</h4>
+        <p>Built an autonomous agentic configuration optimizer with a reward system and context management. On 4 training workloads it reached up to <b>16% higher TPU throughput</b>. I also enabled HybridSim, a TPU performance simulator, for third-party workloads, with accuracy gains of up to <b>90%</b>.</p>
+        <div class="tags"><i>AI agents</i><i>TPU</i><i>Performance simulation</i></div>
+      </article>
+      <article class="proj" data-cat="opensource">
+        <div class="thumb" data-label="Live Notebook" data-img="projects/live-notebook.gif" data-glyph="save → search → export" style="background:linear-gradient(135deg,#1f1f22,#3a3a40 55%,#8e7bd6)"></div>
+        <div class="meta"><span>Open source</span><span>Claude Code plugin · 2026</span></div>
+        <h4>Save the useful parts of Claude Code chats as local notes</h4>
+        <p>A Claude Code plugin that puts a "Save to notebook" button under every reply, stores each note as a Markdown file on your machine and ships a local web notebook for searching, editing and exporting them. Local-first, no account.</p>
+        <div class="tags"><i>Claude Code plugin</i><i>TypeScript</i><i>Local-first</i></div>
+        <div class="links"><a class="link" href="https://github.com/AmberWJL/live-claude-notebook" target="_blank" rel="noopener">GitHub →</a><a class="link" href="https://amberwjl.github.io/live-claude-notebook/" target="_blank" rel="noopener">Demo →</a></div>
       </article>
       <article class="proj" data-cat="research">
-        <div class="thumb" data-label="TestEvo-Bench" data-img="projects/testevo-bench.jpg" data-glyph="test ⇄ code" style="background:linear-gradient(135deg,#2b2a4c,#6a5ac9 55%,#b9a5e4)"></div>
+        <div class="thumb" data-label="TestEvo-Bench" data-img="projects/testevo-bench.gif" data-glyph="test ⇄ code" style="background:linear-gradient(135deg,#2b2a4c,#6a5ac9 55%,#b9a5e4)"></div>
         <div class="meta"><span>Research</span><span>AIWare 2026</span></div>
         <h4>A live benchmark for test and code co-evolution</h4>
         <p>An executable, continuously updated benchmark for evaluating how well tools evolve tests alongside the code they cover.</p>
         <div class="tags"><i>Benchmarks</i><i>Software testing</i><i>LLMs</i></div>
-        <a class="link" href="https://arxiv.org/abs/2607.02469" target="_blank" rel="noopener" style="width:fit-content;font-size:14px">More →</a>
+        <div class="links"><a class="link" href="https://www.testevo-bench.com/" target="_blank" rel="noopener">Website →</a><a class="link" href="https://arxiv.org/abs/2607.02469" target="_blank" rel="noopener">Paper →</a></div>
       </article>
       <article class="proj" data-cat="industry">
         <div class="thumb" data-label="Code insight platform" data-img="projects/code-insight.jpg" data-glyph="embed → index → RAG" style="background:linear-gradient(135deg,#123c3a,#2a8f86 60%,#8ad8cb)"></div>
@@ -302,7 +311,7 @@ img.portrait{display:block;object-fit:cover;object-position:50% 50%;background:#
         <div class="tags"><i>RAG</i><i>LLMs</i><i>AST parsing</i></div>
       </article>
       <article class="proj" data-cat="research">
-        <div class="thumb" data-label="Incremental coverage" data-img="projects/incremental-coverage.jpg" data-glyph="Δ coverage" style="background:linear-gradient(135deg,#2a1b3d,#7d4fa8 55%,#f4b3cb)"></div>
+        <div class="thumb" data-label="Incremental coverage" data-img="projects/incremental-coverage.png" data-glyph="Δ coverage" style="background:linear-gradient(135deg,#2a1b3d,#7d4fa8 55%,#f4b3cb)"></div>
         <div class="meta"><span>Research</span><span>ASE 2024</span></div>
         <h4>Efficient incremental code coverage</h4>
         <p>Speeding up code coverage analysis for regression test suites by recomputing only what changed between versions.</p>
@@ -329,7 +338,7 @@ img.portrait{display:block;object-fit:cover;object-position:50% 50%;background:#
         <div>
           <h4>TestEvo-Bench: An Executable and Live Benchmark for Test and Code Co-Evolution</h4>
           <p><b>Jiale Amber Wang</b>, Kaiyuan Wang, and Pengyu Nie. International Conference on AI-powered Software.</p>
-          <div class="links"><a class="link" href="https://arxiv.org/abs/2607.02469" target="_blank" rel="noopener">Paper</a></div>
+          <div class="links"><a class="link" href="https://arxiv.org/abs/2607.02469" target="_blank" rel="noopener">Paper</a><a class="link" href="https://www.testevo-bench.com/" target="_blank" rel="noopener">Website</a></div>
         </div>
       </li>
       <li class="pub">
@@ -524,10 +533,12 @@ document.querySelectorAll('.thumb[data-img]').forEach(t => {
   img.onload = () => { t.style.backgroundImage = `url("${t.dataset.img}")`; t.classList.add('has-img'); };
   img.src = t.dataset.img;
 });
+/* cards with data-hide stay off the page; the chips below never bring them back */
+document.querySelectorAll('.proj[data-hide]').forEach(p => p.hidden = true);
 $('#chips').addEventListener('click', e => {
   const c = e.target.closest('.chip'); if (!c) return;
   document.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === c));
-  document.querySelectorAll('.proj').forEach(p => p.hidden = c.dataset.f !== 'all' && p.dataset.cat !== c.dataset.f);
+  document.querySelectorAll('.proj').forEach(p => p.hidden = p.hasAttribute('data-hide') || (c.dataset.f !== 'all' && p.dataset.cat !== c.dataset.f));
 });
 
 /* ================= helpers ================= */
